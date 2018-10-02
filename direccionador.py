@@ -133,7 +133,7 @@ class DireccionCompleja(Direccion):
 
     @staticmethod
     def analize_field(field):
-        return field.lower() == "pb" or field.lower() == "e" or field.lower() == "y"
+        return field.lower() in ("casa", "bis", "nro", "esq", "s/n", "pb", "e", "y")
 
     def analize_depto(self):
         array_calle = self.calle.split(' ')
