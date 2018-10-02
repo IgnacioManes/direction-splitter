@@ -133,14 +133,17 @@ class DireccionCompleja(Direccion):
 
     @staticmethod
     def analize_field(field):
-        return field.lower() in ("casa", "bis", "nro", "esq", "s/n", "pb", "e", "y")
+        return field.lower() in ("casa", "bis", "nro", "esq", "s/n", "pb", "e", "y", "n")
 
     def analize_depto(self):
+        self.calle = self.calle.strip()
         array_calle = self.calle.split(' ')
         ultimo = array_calle[-1]
         anteultimo = array_calle[-2]
-        if ((ultimo.isalpha() and len(ultimo) == 1) or (anteultimo.isalpha() and len(anteultimo) == 1))\
-                and (not self.analize_field(ultimo) and not self.analize_field(anteultimo)):
+        if ((ultimo.isalpha() and len(ultimo) == 1) or
+                (anteultimo.isalpha() and len(anteultimo) == 1) or
+            (anteultimo.isnumeric() and ultimo.isnumeric())) and \
+                (not self.analize_field(ultimo) and not self.analize_field(anteultimo)):
             self.datoExtra = self.concatenar_string(self.datoExtra, array_calle[-2] + " " + array_calle[-1])
             array_calle.pop()
             array_calle.pop()
@@ -156,7 +159,7 @@ class DireccionCompleja(Direccion):
                 self.datoExtra = self.concatenar_string(self.datoExtra, field)
             else:
                 self.calle = self.concatenar_string(self.calle, field)
-        if field.lower() == "e" or field.lower() == "y":
+        if tiene_pb_or_E_or_y:
             self.datoExtra = self.concatenar_string(self.datoExtra, self.altura)
             self.altura = ""
 
@@ -173,8 +176,6 @@ class DireccionCompleja(Direccion):
             puntaje -= 4
         if posterior == "":
             puntaje -= 1
-        if anterior.isnumeric():
-            puntaje += 1
         """print "----result----"
         print "altura: "+altura
         print "post: "+posterior
@@ -215,7 +216,7 @@ class DireccionCompleja(Direccion):
                     if self.altura != "":
                         self.calle = posible_calle
                         posible_calle += " " + field
-                        es_calle = False
+                    es_calle = False
                     self.altura = field
                     posc_altura = posc
 
